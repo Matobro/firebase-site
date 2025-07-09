@@ -19,15 +19,15 @@ export const Navbar = () => {
           <Link to="/createpost">Create Post</Link>
         )}
       </div>
-      <div className="user">
-        {user && (
-          <>
-            <p>{user?.displayName}</p>
-            <img src={user?.photoURL || ""} width="50" height="50" />
-            <button onClick={logOut}>Log Out</button>
-          </>
-        )}
-      </div>
+      {user && (
+        <div className="user-info">
+          <div className="username">{user?.displayName}</div>
+          <img src={user?.photoURL || ""} width="50" height="50" />
+          <button className="logout-button" onClick={logOut}>
+            Log Out
+          </button>
+        </div>
+      )}
     </div>
   );
 };

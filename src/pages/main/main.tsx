@@ -17,8 +17,8 @@ export const Main = () => {
   const postsRef = collection(db, "posts");
 
   const getPosts = async () => {
-    const ordering = query(postsRef, orderBy("date", "desc"));
-    const data = await getDocs(postsRef);
+    const order = query(postsRef, orderBy("date", "desc"));
+    const data = await getDocs(order);
     setPostsList(
       data.docs.map((doc) => ({ ...doc.data(), id: doc.id })) as Post[]
     );
