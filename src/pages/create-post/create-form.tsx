@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { auth, db } from "../../config/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useNavigate } from "react-router-dom";
@@ -18,10 +18,12 @@ export const CreateForm = () => {
     title: yup
       .string()
       .min(5, "Title is too short")
+      .max(30, "Title is too long")
       .required("Title is too short"),
     description: yup
       .string()
       .min(10, "Post is too short")
+      .max(200, "Post is too long")
       .required("Post is too short"),
   });
 
@@ -40,6 +42,7 @@ export const CreateForm = () => {
       ...data,
       username: user?.displayName,
       userId: user?.uid,
+      date: serverTimestamp(),
     });
 
     navigate("/");

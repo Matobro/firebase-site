@@ -1,4 +1,4 @@
-import { getDocs, collection } from "firebase/firestore";
+import { getDocs, collection, query, orderBy } from "firebase/firestore";
 import { db } from "../../config/firebase";
 import { useEffect, useState } from "react";
 import { Post } from "./post";
@@ -9,12 +9,15 @@ export interface Post {
   title: string;
   username: string;
   description: string;
+  date: string;
+  commentText: string;
 }
 export const Main = () => {
   const [postsList, setPostsList] = useState<Post[] | null>(null);
   const postsRef = collection(db, "posts");
 
   const getPosts = async () => {
+    const ordering = query(postsRef, orderBy("date", "desc"));
     const data = await getDocs(postsRef);
     setPostsList(
       data.docs.map((doc) => ({ ...doc.data(), id: doc.id })) as Post[]

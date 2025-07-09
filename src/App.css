@@ -1,7 +1,11 @@
 .App {
   text-align: center;
+  background-color: black;
 }
 
+body {
+  background-color: black;
+}
 .App-logo {
   height: 40vmin;
   pointer-events: none;
@@ -21,7 +25,7 @@
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
-  color: white;
+  color: black;
 }
 
 .App-link {
@@ -142,6 +146,101 @@ textarea {
 
 .submit-form:hover {
   cursor: pointer;
+}
+
+.post {
+  margin: 30px auto;
+  width: 500px;
+  background-color: rgb(0, 30, 0);
+  color: green;
+  border: 5px groove green;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.title,
+.body,
+.footer {
+  padding: 16px;
+}
+
+.title {
+  border-bottom: 2px solid green;
+}
+
+.body {
+  border-bottom: 2px solid green;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.post-date,
+.post-user {
+  flex: 1;
+  text-align: left;
+}
+
+.post-user {
+  text-align: right;
+}
+
+.post-likes {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.comments-section {
+  padding: 16px;
+  border-top: 1px solid green;
+}
+
+.comment-input {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.comment-input input {
+  flex: 1;
+  padding: 6px;
+  border: 1px solid green;
+  background-color: black;
+  color: green;
+}
+
+.comment-input button {
+  background-color: green;
+  color: black;
+  padding: 6px 12px;
+  border: none;
+  cursor: pointer;
+}
+
+.comment {
+  margin-bottom: 10px;
+  border-bottom: 1px dashed green;
+  padding-bottom: 8px;
+}
+
+.comment-meta {
+  font-size: 0.85rem;
+  color: #aaffaa;
 }
 @keyframes App-logo-spin {
   from {

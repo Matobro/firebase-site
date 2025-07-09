@@ -6,6 +6,7 @@ import {
   where,
   deleteDoc,
   doc,
+  serverTimestamp,
 } from "firebase/firestore";
 import { Post as IPost } from "./main";
 import { auth, db } from "../../config/firebase";
@@ -21,15 +22,23 @@ interface Like {
   userId: string;
 }
 
+interface Comment {
+  id: string;
+  commentText: string;
+  username: string;
+  userId: string;
+  date: any;
+}
+
 export const Post = (props: Props) => {
   const { post } = props;
   const [user] = useAuthState(auth);
-
   const [likes, setLikes] = useState<Like[] | null>(null);
   const likesRef = collection(db, "likes");
-
   const likesDoc = query(likesRef, where("postId", "==", post.id));
-
+  const commentsRef = collection(db, "comments");
+  const [newComment, setNewComment] = useState("");
+  const [comments, setComments] = useState<Comment[]>([]);
   const getLikes = async () => {
     const data = await getDocs(likesDoc);
     setLikes(
@@ -79,26 +88,93 @@ export const Post = (props: Props) => {
 
   const hasLiked = likes?.find((like) => like.userId === user?.uid);
 
+  const getComments = async () => {
+    const order = query(commentsRef, where("postId", "==", post.id));
+    const data = await getDocs(order);
+    const sorted = data.docs
+      .map((doc) => ({ ...doc.data(), id: doc.id } as Comment))
+      .sort((a, b) => b.date?.seconds - a.date?.seconds);
+    setComments(sorted);
+  };
+
+  const addComment = async () => {
+    await addDoc(commentsRef, {
+      postId: post.id,
+      commentText: newComment,
+      username: user?.displayName,
+      userId: user?.uid,
+      date: serverTimestamp(),
+    });
+
+    setNewComment("");
+    getComments();
+  };
+  function formatDate(dateInput: any) {
+    if (!dateInput) return "";
+    const date = dateInput.toDate ? dateInput.toDate() : new Date(dateInput);
+
+    return new Intl.DateTimeFormat("en-GB", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    }).format(date);
+  }
+
   useEffect(() => {
     getLikes();
+    getComments();
   }, []);
 
   return (
-    <div>
+    <div className="post">
       <div className="title">
-        <h1>{post.title}</h1>
+        <h3>{post.title}</h3>
       </div>
       <div className="body">
         <p>{post.description}</p>
       </div>
 
       <div className="footer">
-        <p>@{post.username}</p>
-        <button onClick={hasLiked ? removeLike : addLike}>
-          {" "}
-          {hasLiked ? <>&#128078;</> : <>&#128077;</>}{" "}
-        </button>
-        {likes && <p>Likes: {likes?.length}</p>}
+        <div className="post-date">{formatDate(post?.date)}</div>
+
+        <div className="post-likes">
+          <button
+            className="like-button"
+            onClick={hasLiked ? removeLike : addLike}
+          >
+            {hasLiked ? <>&#128078;</> : <>&#128077;</>}
+          </button>
+          {likes && <p className="like-amount">Likes: {likes?.length}</p>}
+        </div>
+
+        <div className="post-user">@{post.username}</div>
+      </div>
+
+      <div className="comments-section">
+        <div className="comment-input">
+          <input
+            type="text"
+            placeholder="Write a comment..."
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+          />
+          <button onClick={addComment}>Post</button>
+        </div>
+
+        <div className="comments-list">
+          {comments.map((comment) => (
+            <div key={comment.id} className="comment">
+              <p className="comment-meta">
+                <strong>@{comment.username}</strong> ·{" "}
+                {formatDate(comment.date)}
+              </p>
+              <p>{comment.commentText}</p>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
